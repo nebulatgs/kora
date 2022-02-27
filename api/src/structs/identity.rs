@@ -1,21 +1,34 @@
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use ed25519_dalek::PublicKey;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct Identity {
+pub struct PrivateIdentity {
     pub name: String,
-    pub id: Uuid,
-    pub public_key: PublicKey
+    pub public_id: Uuid,
+    pub private_id: Uuid,
+}
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct PublicIdentity {
+    pub name: String,
+    pub public_id: Uuid,
 }
 
-impl Identity {
-    pub fn new(name: String, public_key: PublicKey) -> Self {
-        let id = Uuid::new_v4();
+impl From<PrivateIdentity> for PublicIdentity {
+    fn from(identity: PrivateIdentity) -> Self {
+        Self {
+            name: identity.name,
+            public_id: identity.public_id
+        }
+    }
+}
+
+impl PrivateIdentity {
+    pub fn new(name: String) -> Self {
+        let (public_id, private_id) = (Uuid::new_v4(), Uuid::new_v4());
         Self {
             name,
-            id,
-            public_key
+            public_id,
+            private_id
         }
     }
 }
@@ -23,5 +36,4 @@ impl Identity {
 #[derive(Deserialize)]
 pub struct IdentityCreateRequest {
     pub name: String,
-    pub public_key: PublicKey,
 }

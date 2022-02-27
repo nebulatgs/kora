@@ -1,7 +1,9 @@
 mod controllers;
-mod structs;
+mod realtime;
 mod states;
+mod structs;
 
+use actix_cors::Cors;
 use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
 use controllers::*;
 use states::{channels::ChannelState, identity::IdentityState};
@@ -26,6 +28,7 @@ async fn main() -> std::io::Result<()> {
     let identity_state = web::Data::new(IdentityState::new());
     HttpServer::new(move || {
         App::new()
+            .wrap(Cors::default().supports_credentials().allow_any_origin())
             .app_data(channel_state.clone())
             .app_data(identity_state.clone())
             .service(hello)
@@ -34,6 +37,9 @@ async fn main() -> std::io::Result<()> {
             .service(meta::version)
             .service(channels::list)
             .service(channels::create)
+            .service(channels::get)
+            .service(channels::start)
+            .service(channels::join)
             .service(identity::create)
             .route("/hey", web::get().to(manual_hello))
     })

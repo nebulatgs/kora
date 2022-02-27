@@ -2,17 +2,20 @@ use std::{sync::Mutex, collections::HashMap};
 
 use uuid::Uuid;
 
-use crate::structs::identity::Identity;
+use crate::structs::identity::PrivateIdentity;
 
 pub struct IdentityState {
-    // UUID -> Identity
-    pub identities: Mutex<HashMap<Uuid, Identity>>
+    // Private UUID -> Identity
+    pub private_identities: Mutex<HashMap<Uuid, PrivateIdentity>>,
+    // Public UUID -> Identity
+    pub public_identities: Mutex<HashMap<Uuid, PrivateIdentity>>
 }
 
 impl IdentityState {
     pub fn new() -> Self {
         Self {
-            identities: Mutex::new(HashMap::new())
+            private_identities: Mutex::new(HashMap::new()),
+            public_identities: Mutex::new(HashMap::new())
         }
     }
 }
